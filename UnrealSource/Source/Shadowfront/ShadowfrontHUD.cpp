@@ -20,6 +20,36 @@ void AShadowfrontHUD::DrawHUD()
     UFont* SmallFont = GEngine ? GEngine->GetSmallFont() : nullptr;
     UFont* LargeFont = GEngine ? GEngine->GetLargeFont() : nullptr;
 
+    if (GameMode && GameMode->IsAwaitingDifficulty())
+    {
+        const float PanelWidth = FMath::Min(980.0f, Width - 72.0f);
+        const float PanelX = (Width - PanelWidth) * 0.5f;
+        const float PanelY = Height * 0.24f;
+        const float CardGap = 14.0f;
+        const float CardWidth = (PanelWidth - (CardGap * 2.0f)) / 3.0f;
+        const float CardHeight = 150.0f;
+        const FLinearColor Panel(0.015f, 0.030f, 0.045f, 0.92f);
+        const FLinearColor Recon(0.08f, 0.34f, 0.26f, 0.96f);
+        const FLinearColor Operation(0.16f, 0.20f, 0.23f, 0.96f);
+        const FLinearColor Veteran(0.40f, 0.12f, 0.05f, 0.96f);
+
+        DrawRect(Panel, PanelX, PanelY, PanelWidth, 260.0f);
+        DrawText(TEXT("SHADOWFRONT // ASH LINE"), SoftWhite, PanelX + 32.0f, PanelY + 25.0f, LargeFont, 1.18f, false);
+        DrawText(TEXT("SELECT FIELD DIRECTIVE"), RadarGreen, PanelX + 34.0f, PanelY + 79.0f, SmallFont, 0.90f, false);
+
+        DrawRect(Recon, PanelX, PanelY + 110.0f, CardWidth, CardHeight);
+        DrawRect(Operation, PanelX + CardWidth + CardGap, PanelY + 110.0f, CardWidth, CardHeight);
+        DrawRect(Veteran, PanelX + (CardWidth + CardGap) * 2.0f, PanelY + 110.0f, CardWidth, CardHeight);
+        DrawText(TEXT("1 // RECON"), SoftWhite, PanelX + 20.0f, PanelY + 135.0f, SmallFont, 1.10f, false);
+        DrawText(TEXT("MORE ARMOR"), SoftWhite, PanelX + 20.0f, PanelY + 181.0f, SmallFont, 0.74f, false);
+        DrawText(TEXT("2 // OPERATION"), SoftWhite, PanelX + CardWidth + CardGap + 20.0f, PanelY + 135.0f, SmallFont, 1.10f, false);
+        DrawText(TEXT("STANDARD ORDER"), SoftWhite, PanelX + CardWidth + CardGap + 20.0f, PanelY + 181.0f, SmallFont, 0.74f, false);
+        DrawText(TEXT("3 // VETERAN"), SoftWhite, PanelX + (CardWidth + CardGap) * 2.0f + 20.0f, PanelY + 135.0f, SmallFont, 1.10f, false);
+        DrawText(TEXT("HARD CONTACT"), SoftWhite, PanelX + (CardWidth + CardGap) * 2.0f + 20.0f, PanelY + 181.0f, SmallFont, 0.74f, false);
+        DrawText(TEXT("TAP A CARD TO DEPLOY"), DimWhite, PanelX + 34.0f, PanelY + 287.0f, SmallFont, 0.76f, false);
+        return;
+    }
+
     DrawText(TEXT("SHADOWFRONT // ASH LINE"), SoftWhite, 36.0f, 22.0f, SmallFont, 0.80f, false);
     DrawText(GameMode ? GameMode->GetMissionText() : TEXT("ESTABLISHING UPLINK"), RadarGreen, 36.0f, 48.0f, SmallFont, 1.08f, false);
     DrawText(GameMode ? FString::Printf(TEXT("DIFFICULTY // %s"), *GameMode->GetDifficultyText()) : TEXT("DIFFICULTY // OPERATION"), DimWhite, 36.0f, 74.0f, SmallFont, 0.72f, false);

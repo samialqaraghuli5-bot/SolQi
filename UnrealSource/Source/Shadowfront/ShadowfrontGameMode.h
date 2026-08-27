@@ -28,8 +28,10 @@ public:
     FString GetMissionText() const;
     FString GetDifficultyText() const;
     bool IsMissionComplete() const { return bMissionComplete; }
+    bool IsAwaitingDifficulty() const { return bAwaitingDifficulty; }
     int32 GetRemainingHostiles() const { return RemainingHostiles; }
     int32 GetMissionStage() const { return CurrentWave; }
+    void SelectDifficulty(EShadowfrontDifficulty InDifficulty);
 
 private:
     AStaticMeshActor* AddBlock(const FVector& Location, const FVector& Scale, const FLinearColor& Color);
@@ -50,6 +52,8 @@ private:
     int32 RemainingHostiles = 0;
     int32 CurrentWave = 0;
     bool bMissionComplete = false;
+    bool bAwaitingDifficulty = false;
+    bool bDifficultyFromCommandLine = false;
     EShadowfrontDifficulty Difficulty = EShadowfrontDifficulty::Operation;
     FTimerHandle MissionTimer;
     UPROPERTY(Transient) TObjectPtr<UAudioComponent> OpeningMusicComponent;

@@ -17,6 +17,7 @@
 #include "Misc/Parse.h"
 #include "Shadowfront.h"
 #include "ShadowfrontHUD.h"
+#include "ShadowfrontPlayerController.h"
 #include "ShadowfrontSaveGame.h"
 #include "ShadowfrontSoldier.h"
 #include "TimerManager.h"
@@ -25,6 +26,7 @@ AShadowfrontGameMode::AShadowfrontGameMode()
 {
     DefaultPawnClass = AShadowfrontSoldier::StaticClass();
     HUDClass = AShadowfrontHUD::StaticClass();
+    PlayerControllerClass = AShadowfrontPlayerController::StaticClass();
 }
 
 void AShadowfrontGameMode::BeginPlay()
@@ -43,6 +45,11 @@ void AShadowfrontGameMode::BeginPlay()
     if (bMissionComplete)
     {
         PlayMissionAudio(TEXT("/Game/Audio/Music/shadowfront_exploration_bed.shadowfront_exploration_bed"), 0.30f);
+        return;
+    }
+    if (CurrentWave == 0 && !bDifficultyFromCommandLine)
+    {
+        bAwaitingDifficulty = true;
         return;
     }
     GetWorldTimerManager().SetTimer(MissionTimer, this, CurrentWave > 0 ? &AShadowfrontGameMode::QueueNextWave : &AShadowfrontGameMode::BeginFirstWave, 2.0f, false);
@@ -130,11 +137,26 @@ void AShadowfrontGameMode::ConfigureDifficulty()
     FString DifficultyArgument;
     if (FParse::Value(FCommandLine::Get(), TEXT("ShadowfrontDifficulty="), DifficultyArgument))
     {
+        bDifficultyFromCommandLine = true;
         DifficultyArgument = DifficultyArgument.ToUpper();
         if (DifficultyArgument == TEXT("RECON")) { Difficulty = EShadowfrontDifficulty::Recon; }
         else if (DifficultyArgument == TEXT("VETERAN")) { Difficulty = EShadowfrontDifficulty::Veteran; }
         else { Difficulty = EShadowfrontDifficulty::Operation; }
     }
+}
+
+void AShadowfrontGameMode::SelectDifficulty(EShadowfrontDifficulty InDifficulty)
+{
+    if (!bAwaitingDifficulty) { return; }
+    Difficulty = InDifficulty;
+    bAwaitingDifficulty = false;
+    bDifficultyFromCommandLine = false;
+    if (AShadowfrontSoldier* Soldier = Cast<AShadowfrontSoldier>(UGameplayStatics::GetPlayerCharacter(this, 0)))
+    {
+        Soldier->ConfigureDifficulty(GetPlayerHealthMultiplier());
+        Soldier->SetCheckpoint(Soldier->GetActorLocation());
+    }
+    GetWorldTimerManager().SetTimer(MissionTimer, this, &AShadowfrontGameMode::BeginFirstWave, 0.85f, false);
 }
 
 float AShadowfrontGameMode::GetPlayerHealthMultiplier() const
