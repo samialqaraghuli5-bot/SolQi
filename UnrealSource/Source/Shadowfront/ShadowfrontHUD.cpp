@@ -25,8 +25,8 @@ void AShadowfrontHUD::DrawHUD()
     DrawText(GameMode ? FString::Printf(TEXT("DIFFICULTY // %s"), *GameMode->GetDifficultyText()) : TEXT("DIFFICULTY // OPERATION"), DimWhite, 36.0f, 74.0f, SmallFont, 0.72f, false);
 
     const float HealthPercent = Soldier ? Soldier->GetHealthPercent() : 1.0f;
-    Canvas->DrawTile(nullptr, 36.0f, 100.0f, 260.0f, 14.0f, 0.0f, 0.0f, 1.0f, 1.0f, FLinearColor(0.0f, 0.0f, 0.0f, 0.50f));
-    Canvas->DrawTile(nullptr, 36.0f, 100.0f, 260.0f * HealthPercent, 14.0f, 0.0f, 0.0f, 1.0f, 1.0f, HealthPercent < 0.30f ? DangerOrange : RadarGreen);
+    DrawRect(FLinearColor(0.0f, 0.0f, 0.0f, 0.50f), 36.0f, 100.0f, 260.0f, 14.0f);
+    DrawRect(HealthPercent < 0.30f ? DangerOrange : RadarGreen, 36.0f, 100.0f, 260.0f * HealthPercent, 14.0f);
     DrawText(TEXT("VITAL"), SoftWhite, 304.0f, 94.0f, SmallFont, 0.88f, false);
 
     const FString Ammo = FString::Printf(TEXT("%02d / %03d"), Soldier ? Soldier->GetMagazineAmmo() : 0, Soldier ? Soldier->GetReserveAmmo() : 0);
@@ -40,10 +40,10 @@ void AShadowfrontHUD::DrawHUD()
 
     const float CenterX = Width * 0.5f;
     const float CenterY = Height * 0.5f;
-    Canvas->DrawLine(CenterX - 16.0f, CenterY, CenterX - 5.0f, CenterY, RadarGreen, 2.0f);
-    Canvas->DrawLine(CenterX + 5.0f, CenterY, CenterX + 16.0f, CenterY, RadarGreen, 2.0f);
-    Canvas->DrawLine(CenterX, CenterY - 16.0f, CenterX, CenterY - 5.0f, RadarGreen, 2.0f);
-    Canvas->DrawLine(CenterX, CenterY + 5.0f, CenterX, CenterY + 16.0f, RadarGreen, 2.0f);
-    Canvas->DrawLine(28.0f, Height - 112.0f, 130.0f, Height - 112.0f, FLinearColor(1.0f, 1.0f, 1.0f, 0.28f), 1.0f);
+    DrawLine(CenterX - 16.0f, CenterY, CenterX - 5.0f, CenterY, RadarGreen, 2.0f);
+    DrawLine(CenterX + 5.0f, CenterY, CenterX + 16.0f, CenterY, RadarGreen, 2.0f);
+    DrawLine(CenterX, CenterY - 16.0f, CenterX, CenterY - 5.0f, RadarGreen, 2.0f);
+    DrawLine(CenterX, CenterY + 5.0f, CenterX, CenterY + 16.0f, RadarGreen, 2.0f);
+    DrawLine(28.0f, Height - 112.0f, 130.0f, Height - 112.0f, FLinearColor(1.0f, 1.0f, 1.0f, 0.28f), 1.0f);
     DrawText(TEXT("MOVE"), SoftWhite, 44.0f, Height - 102.0f, SmallFont, 0.85f, false);
 }

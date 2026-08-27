@@ -3,6 +3,7 @@
 #include "Components/AudioComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
 #include "Components/LightComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/ExponentialHeightFog.h"
 #include "Engine/PointLight.h"
@@ -82,7 +83,7 @@ void AShadowfrontGameMode::AddLight(const FVector& Location, const FLinearColor&
     {
         Light->GetLightComponent()->SetLightColor(Color);
         Light->GetLightComponent()->SetIntensity(Intensity);
-        Light->GetLightComponent()->SetAttenuationRadius(Radius);
+        if (UPointLightComponent* PointLight = Cast<UPointLightComponent>(Light->GetLightComponent())) { PointLight->SetAttenuationRadius(Radius); }
         Light->GetLightComponent()->SetCastShadows(false);
     }
 }
