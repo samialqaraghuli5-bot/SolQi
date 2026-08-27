@@ -17,9 +17,9 @@ PROJECT_DIR = unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_di
 EXTERNAL_ASSET_DIR = os.path.join(PROJECT_DIR, "ExternalAssets")
 
 IMPORT_MANIFEST = (
-    ("Art/Textures", "shadowfront-wet-concrete-material.png", "/Game/Art/Textures"),
-    ("Art/Textures", "shadowfront-rusted-steel-material.png", "/Game/Art/Textures"),
-    ("Art/Textures", "shadowfront-visor-mark.png", "/Game/Art/Textures"),
+    ("", "shadowfront-wet-concrete-material.png", "/Game/Art/Textures"),
+    ("", "shadowfront-rusted-steel-material.png", "/Game/Art/Textures"),
+    ("", "shadowfront-visor-mark.png", "/Game/Art/Textures"),
     ("Audio", "shadowfront-opening-theme.wav", "/Game/Audio/Music"),
     ("Audio", "shadowfront-combat-loop.wav", "/Game/Audio/Music"),
     ("Audio", "shadowfront-exploration-bed.wav", "/Game/Audio/Music"),

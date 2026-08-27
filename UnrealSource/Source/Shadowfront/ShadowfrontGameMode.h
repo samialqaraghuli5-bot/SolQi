@@ -34,7 +34,7 @@ public:
     void SelectDifficulty(EShadowfrontDifficulty InDifficulty);
 
 private:
-    AStaticMeshActor* AddBlock(const FVector& Location, const FVector& Scale, const FLinearColor& Color);
+    AStaticMeshActor* AddBlock(const FVector& Location, const FVector& Scale, const FLinearColor& Color, const TCHAR* MaterialPath = nullptr);
     void AddLight(const FVector& Location, const FLinearColor& Color, float Intensity, float Radius);
     void SpawnArena();
     void BeginFirstWave();

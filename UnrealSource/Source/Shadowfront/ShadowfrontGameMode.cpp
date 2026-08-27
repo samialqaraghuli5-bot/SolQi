@@ -11,6 +11,7 @@
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/Material.h"
+#include "Materials/MaterialInterface.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
@@ -65,7 +66,7 @@ UAudioComponent* AShadowfrontGameMode::PlayMissionAudio(const TCHAR* AssetPath, 
     return nullptr;
 }
 
-AStaticMeshActor* AShadowfrontGameMode::AddBlock(const FVector& Location, const FVector& Scale, const FLinearColor& Color)
+AStaticMeshActor* AShadowfrontGameMode::AddBlock(const FVector& Location, const FVector& Scale, const FLinearColor& Color, const TCHAR* MaterialPath)
 {
     AStaticMeshActor* Block = GetWorld()->SpawnActor<AStaticMeshActor>(Location, FRotator::ZeroRotator);
     if (!Block) { return nullptr; }
@@ -74,7 +75,11 @@ AStaticMeshActor* AShadowfrontGameMode::AddBlock(const FVector& Location, const 
     static ConstructorHelpers::FObjectFinder<UMaterial> BaseMaterial(TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
     if (CubeMesh.Succeeded()) { Mesh->SetStaticMesh(CubeMesh.Object); }
     Mesh->SetWorldScale3D(Scale);
-    if (BaseMaterial.Succeeded())
+    if (MaterialPath)
+    {
+        if (UMaterialInterface* ImportedMaterial = LoadObject<UMaterialInterface>(nullptr, MaterialPath)) { Mesh->SetMaterial(0, ImportedMaterial); }
+    }
+    else if (BaseMaterial.Succeeded())
     {
         UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(BaseMaterial.Object, this);
         DynamicMaterial->SetVectorParameterValue(TEXT("Color"), Color);
@@ -104,13 +109,15 @@ void AShadowfrontGameMode::SpawnArena()
     const FLinearColor WarmLamp(1.0f, 0.42f, 0.12f);
     const FLinearColor RadarGreen(0.08f, 0.63f, 0.36f);
 
-    AddBlock(FVector(2150.0f, 0.0f, -118.0f), FVector(98.0f, 30.0f, 0.20f), Concrete);
-    AddBlock(FVector(3200.0f, -2850.0f, 340.0f), FVector(31.0f, 0.25f, 5.0f), Steel);
-    AddBlock(FVector(3200.0f, 2850.0f, 340.0f), FVector(31.0f, 0.25f, 5.0f), Steel);
-    AddBlock(FVector(1240.0f, -780.0f, 130.0f), FVector(6.2f, 3.6f, 2.4f), Steel);
-    AddBlock(FVector(2180.0f, 780.0f, 130.0f), FVector(6.2f, 3.6f, 2.4f), Steel);
-    AddBlock(FVector(3150.0f, -840.0f, 130.0f), FVector(6.2f, 3.6f, 2.4f), Steel);
-    AddBlock(FVector(3880.0f, 840.0f, 130.0f), FVector(6.2f, 3.6f, 2.4f), Steel);
+    const TCHAR* ConcreteMaterial = TEXT("/Game/Art/Materials/M_SF_Concrete.M_SF_Concrete");
+    const TCHAR* SteelMaterial = TEXT("/Game/Art/Materials/M_SF_RustedSteel.M_SF_RustedSteel");
+    AddBlock(FVector(2150.0f, 0.0f, -118.0f), FVector(98.0f, 30.0f, 0.20f), Concrete, ConcreteMaterial);
+    AddBlock(FVector(3200.0f, -2850.0f, 340.0f), FVector(31.0f, 0.25f, 5.0f), Steel, SteelMaterial);
+    AddBlock(FVector(3200.0f, 2850.0f, 340.0f), FVector(31.0f, 0.25f, 5.0f), Steel, SteelMaterial);
+    AddBlock(FVector(1240.0f, -780.0f, 130.0f), FVector(6.2f, 3.6f, 2.4f), Steel, SteelMaterial);
+    AddBlock(FVector(2180.0f, 780.0f, 130.0f), FVector(6.2f, 3.6f, 2.4f), Steel, SteelMaterial);
+    AddBlock(FVector(3150.0f, -840.0f, 130.0f), FVector(6.2f, 3.6f, 2.4f), Steel, SteelMaterial);
+    AddBlock(FVector(3880.0f, 840.0f, 130.0f), FVector(6.2f, 3.6f, 2.4f), Steel, SteelMaterial);
     AddBlock(FVector(1730.0f, -260.0f, 22.0f), FVector(1.25f, 2.0f, 0.7f), Barrier);
     AddBlock(FVector(1900.0f, 320.0f, 22.0f), FVector(1.25f, 2.0f, 0.7f), Barrier);
     AddBlock(FVector(2960.0f, 240.0f, 22.0f), FVector(1.25f, 2.0f, 0.7f), Barrier);
