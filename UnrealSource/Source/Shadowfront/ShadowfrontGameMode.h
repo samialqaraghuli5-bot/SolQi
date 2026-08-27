@@ -41,6 +41,7 @@ private:
     void QueueNextWave();
     void CompleteMission();
     void SaveCheckpoint();
+    void LoadCheckpoint();
     void ConfigureDifficulty();
     UAudioComponent* PlayMissionAudio(const TCHAR* AssetPath, float VolumeMultiplier, bool bPersist = false);
     float GetPlayerHealthMultiplier() const;

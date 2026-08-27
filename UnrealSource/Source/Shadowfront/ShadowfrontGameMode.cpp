@@ -29,6 +29,7 @@ AShadowfrontGameMode::AShadowfrontGameMode()
 void AShadowfrontGameMode::BeginPlay()
 {
     Super::BeginPlay();
+    LoadCheckpoint();
     ConfigureDifficulty();
     SpawnArena();
     OpeningMusicComponent = PlayMissionAudio(TEXT("/Game/Audio/Music/shadowfront_opening_theme.shadowfront_opening_theme"), 0.34f, true);
@@ -38,7 +39,12 @@ void AShadowfrontGameMode::BeginPlay()
         Soldier->ConfigureDifficulty(GetPlayerHealthMultiplier());
         Soldier->SetCheckpoint(Soldier->GetActorLocation());
     }
-    GetWorldTimerManager().SetTimer(MissionTimer, this, &AShadowfrontGameMode::BeginFirstWave, 2.0f, false);
+    if (bMissionComplete)
+    {
+        PlayMissionAudio(TEXT("/Game/Audio/Music/shadowfront_exploration_bed.shadowfront_exploration_bed"), 0.30f);
+        return;
+    }
+    GetWorldTimerManager().SetTimer(MissionTimer, this, CurrentWave > 0 ? &AShadowfrontGameMode::QueueNextWave : &AShadowfrontGameMode::BeginFirstWave, 2.0f, false);
 }
 
 UAudioComponent* AShadowfrontGameMode::PlayMissionAudio(const TCHAR* AssetPath, float VolumeMultiplier, bool bPersist)
@@ -126,6 +132,7 @@ void AShadowfrontGameMode::ConfigureDifficulty()
         DifficultyArgument = DifficultyArgument.ToUpper();
         if (DifficultyArgument == TEXT("RECON")) { Difficulty = EShadowfrontDifficulty::Recon; }
         else if (DifficultyArgument == TEXT("VETERAN")) { Difficulty = EShadowfrontDifficulty::Veteran; }
+        else { Difficulty = EShadowfrontDifficulty::Operation; }
     }
 }
 
@@ -199,14 +206,18 @@ void AShadowfrontGameMode::NotifyEnemyEliminated()
     if (RemainingHostiles == 0 && !bMissionComplete)
     {
         SaveCheckpoint();
-        if (CurrentWave < 3) { GetWorldTimerManager().SetTimer(MissionTimer, this, &AShadowfrontGameMode::QueueNextWave, 3.0f, false); }
+        if (CurrentWave < 3)
+        {
+            ++CurrentWave;
+            SaveCheckpoint();
+            GetWorldTimerManager().SetTimer(MissionTimer, this, &AShadowfrontGameMode::QueueNextWave, 3.0f, false);
+        }
         else { GetWorldTimerManager().SetTimer(MissionTimer, this, &AShadowfrontGameMode::CompleteMission, 2.0f, false); }
     }
 }
 
 void AShadowfrontGameMode::QueueNextWave()
 {
-    ++CurrentWave;
     SpawnWave();
 }
 
@@ -227,6 +238,22 @@ void AShadowfrontGameMode::SaveCheckpoint()
     SaveGame->DifficultyName = GetDifficultyText();
     SaveGame->bMissionComplete = bMissionComplete;
     UGameplayStatics::SaveGameToSlot(SaveGame, TEXT("ShadowfrontCampaign"), 0);
+}
+
+void AShadowfrontGameMode::LoadCheckpoint()
+{
+    if (!UGameplayStatics::DoesSaveGameExist(TEXT("ShadowfrontCampaign"), 0)) { return; }
+    const UShadowfrontSaveGame* SaveGame = Cast<UShadowfrontSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("ShadowfrontCampaign"), 0));
+    if (!SaveGame) { return; }
+
+    CurrentWave = FMath::Clamp(SaveGame->CurrentWave, 0, 3);
+    bMissionComplete = SaveGame->bMissionComplete;
+    const FString SavedDifficulty = SaveGame->DifficultyName.ToUpper();
+    if (SavedDifficulty == TEXT("RECON")) { Difficulty = EShadowfrontDifficulty::Recon; }
+    else if (SavedDifficulty == TEXT("VETERAN")) { Difficulty = EShadowfrontDifficulty::Veteran; }
+    else { Difficulty = EShadowfrontDifficulty::Operation; }
+
+    if (bMissionComplete) { CurrentWave = 3; }
 }
 
 FString AShadowfrontGameMode::GetMissionText() const
