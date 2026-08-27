@@ -76,4 +76,14 @@ void AShadowfrontHUD::DrawHUD()
     DrawLine(CenterX, CenterY + 5.0f, CenterX, CenterY + 16.0f, RadarGreen, 2.0f);
     DrawLine(28.0f, Height - 112.0f, 130.0f, Height - 112.0f, FLinearColor(1.0f, 1.0f, 1.0f, 0.28f), 1.0f);
     DrawText(TEXT("MOVE"), SoftWhite, 44.0f, Height - 102.0f, SmallFont, 0.85f, false);
+
+    const float TouchSize = FMath::Clamp(Height * 0.13f, 72.0f, 118.0f);
+    const float FireX = Width - TouchSize - 32.0f;
+    const float FireY = Height - TouchSize - 30.0f;
+    DrawRect(FLinearColor(0.48f, 0.10f, 0.04f, 0.72f), FireX, FireY, TouchSize, TouchSize);
+    DrawText(TEXT("FIRE"), SoftWhite, FireX + 21.0f, FireY + (TouchSize * 0.42f), SmallFont, 0.92f, false);
+    DrawRect(FLinearColor(0.08f, 0.19f, 0.18f, 0.70f), FireX - TouchSize - 18.0f, FireY + (TouchSize * 0.28f), TouchSize * 0.78f, TouchSize * 0.58f);
+    DrawText(TEXT("SPRINT"), SoftWhite, FireX - TouchSize - 10.0f, FireY + (TouchSize * 0.56f), SmallFont, 0.68f, false);
+    DrawRect(FLinearColor(0.10f, 0.16f, 0.22f, 0.72f), FireX, FireY - (TouchSize * 0.62f) - 14.0f, TouchSize, TouchSize * 0.50f);
+    DrawText(TEXT("RELOAD"), SoftWhite, FireX + 12.0f, FireY - (TouchSize * 0.33f) - 14.0f, SmallFont, 0.66f, false);
 }

@@ -137,7 +137,9 @@ void AShadowfrontSoldier::OnTouchBegin(ETouchIndex::Type FingerIndex, FVector Lo
 {
     FVector2D ViewportSize(1.0f, 1.0f);
     if (GEngine && GEngine->GameViewport) { GEngine->GameViewport->GetViewportSize(ViewportSize); }
-    if (Location.X > ViewportSize.X * 0.55f) { Fire(); }
+    if (Location.X > ViewportSize.X * 0.68f && Location.Y > ViewportSize.Y * 0.58f) { Fire(); }
+    else if (Location.X > ViewportSize.X * 0.76f && Location.Y <= ViewportSize.Y * 0.58f) { BeginReload(); }
+    else if (Location.X > ViewportSize.X * 0.54f && Location.Y > ViewportSize.Y * 0.58f) { StartSprint(); }
 }
 
 void AShadowfrontSoldier::ApplyCombatDamage(float DamageAmount)
